@@ -45,7 +45,7 @@ const WelcomeScreen = ({ navigation }) => {
         newProgress[currentIndex] = newProgress[currentIndex] + 0.01;
         return newProgress;
       });
-    }, 25);
+    }, 30);
 
     return () => clearInterval(interval);
   }, [currentIndex]);
@@ -53,6 +53,14 @@ const WelcomeScreen = ({ navigation }) => {
   useEffect(() => {
     setProgress([0, 0, 0]);
   }, [currentIndex]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      arrowAnim.setValue(0); // Reset the arrow animation value when the screen is focused
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const handlePress = () => {
     Animated.timing(arrowAnim, {
@@ -66,7 +74,7 @@ const WelcomeScreen = ({ navigation }) => {
 
   const arrowTranslateX = arrowAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 100], // Adjust the output range as needed
+    outputRange: [0, 90], // Adjust the output range as needed
   });
 
   const currentContent = contentSections[currentIndex];
@@ -79,13 +87,14 @@ const WelcomeScreen = ({ navigation }) => {
             <Progress.Bar
               key={index}
               progress={progress[index]}
-              width={60}
+              width={100}
               color={styles.progressBarColor}
               style={styles.progressBar}
               animated={true}
             />
           ))}
         </View>
+        
         <Text style={styles.starttxt}>{currentContent.starttxt}</Text>
         <Text style={styles.title}>{currentContent.title}</Text>
         <Text style={styles.description}>{currentContent.description}</Text>
@@ -104,6 +113,11 @@ const WelcomeScreen = ({ navigation }) => {
             <Icon name="arrow-right" size={20} color="#EEEEEE" />
           </Animated.View>
         </TouchableOpacity>
+        <View style={styles.loginContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+            <Text style={styles.loginText}>Already have an account? Log in</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
