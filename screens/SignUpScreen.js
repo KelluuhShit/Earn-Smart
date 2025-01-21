@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { colors } from '../utils/theme';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -7,31 +7,20 @@ const SignUpScreen = ({ navigation }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
-  const glowAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: false,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0,
-          duration: 2000,
-          useNativeDriver: false,
-        }),
-      ])
-    ).start();
-  }, []);
 
   const handleSignUp = () => {
     const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!name) newErrors.name = 'Name is required';
     if (!email) newErrors.email = 'Email is required';
+    else if (!emailRegex.test(email)) newErrors.email = 'Email is not valid';
     if (!password) newErrors.password = 'Password is required';
+    else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    if (!confirmPassword) newErrors.confirmPassword = 'Confirm Password is required';
+    if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -42,16 +31,9 @@ const SignUpScreen = ({ navigation }) => {
     setErrors({});
   };
 
-  const glowBackgroundColor = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)'],
-  });
-
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.glowBackground, { backgroundColor: glowBackgroundColor }]}>
-        <Text style={styles.title}>Join Us Today and Unlock Your Financial Potential with Our Comprehensive Courses</Text>
-      </Animated.View>
+      <Text style={styles.title}>Join Us Today and Unlock Your Financial Potential with Our Comprehensive Courses</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={[styles.input, errors.name && styles.inputError]}
@@ -67,6 +49,7 @@ const SignUpScreen = ({ navigation }) => {
         ) : (
           name && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
         )}
+        {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
       </View>
       <View style={styles.inputContainer}>
         <TextInput
@@ -85,6 +68,7 @@ const SignUpScreen = ({ navigation }) => {
         ) : (
           email && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
         )}
+        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
       </View>
       <View style={styles.inputContainer}>
         <TextInput
@@ -102,6 +86,25 @@ const SignUpScreen = ({ navigation }) => {
         ) : (
           password && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
         )}
+        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+      </View>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, errors.confirmPassword && styles.inputError]}
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChangeText={(text) => {
+            setConfirmPassword(text);
+            setErrors((prev) => ({ ...prev, confirmPassword: '' }));
+          }}
+          secureTextEntry
+        />
+        {errors.confirmPassword ? (
+          <Icon name="exclamation-circle" size={20} color="#BE3144" style={styles.errorIcon} />
+        ) : (
+          confirmPassword && confirmPassword === password && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
+        )}
+        {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
       </View>
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Sign Up</Text>
@@ -127,6 +130,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
     marginBottom: 20,
     fontFamily: 'Quicksand-Bold',
+    textAlign: 'start',
   },
   inputContainer: {
     width: '100%',
@@ -148,6 +152,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 15,
     top: 15,
+  },
+  errorText: {
+    color: '#BE3144',
+    fontFamily: 'Quicksand',
+    fontSize: 10,
   },
   button: {
     backgroundColor: colors.secondary,
