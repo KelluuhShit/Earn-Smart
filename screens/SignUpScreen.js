@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { colors } from '../utils/theme';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { firestore } from '../utils/firebase';
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const SignUpScreen = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -9,8 +11,10 @@ const SignUpScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -27,9 +31,34 @@ const SignUpScreen = ({ navigation }) => {
       return;
     }
 
-    // Handle sign-up logic here
+    setLoading(true);
+    setErrorMessage('');
+
+    // Save user data to Firestore
+    try {
+      const userDoc = doc(firestore, "users", email.replace('.', '_'));
+      const userDocSnapshot = await getDoc(userDoc);
+
+      if (userDocSnapshot.exists()) {
+        setErrorMessage("Email already exists. Please use a different email.");
+      } else {
+        await setDoc(userDoc, {
+          username: name,
+          email: email,
+          password: password,
+        });
+
+    // Clear errors and navigate to the next screen
     setErrors({});
-  };
+    navigation.navigate('SignIn');
+  }
+} catch (error) {
+  console.error("Error adding document: ", error);
+  setErrorMessage("Error adding document: " + error.message);
+} finally {
+  setLoading(false);
+}
+};
 
   return (
     <View style={styles.container}>
@@ -106,9 +135,14 @@ const SignUpScreen = ({ navigation }) => {
         )}
         {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Sign Up</Text>
+      <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
+        {loading ? (
+          <ActivityIndicator size="small" color={colors.background} />
+        ) : (
+          <Text style={styles.buttonText}>Sign Up</Text>
+        )}
       </TouchableOpacity>
+      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
         <Text style={styles.loginText}>Already have an account? Log in</Text>
       </TouchableOpacity>
@@ -131,6 +165,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontFamily: 'Quicksand-Bold',
     textAlign: 'start',
+    width:'100%',
   },
   inputContainer: {
     width: '100%',
