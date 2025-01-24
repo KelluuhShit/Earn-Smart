@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { colors } from '../utils/theme';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { firestore } from '../utils/firebase';
@@ -61,6 +61,7 @@ const SignUpScreen = ({ navigation }) => {
 };
 
   return (
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
     <View style={styles.container}>
       <Text style={styles.title}>Join Us Today and Unlock Your Financial Potential with Our Comprehensive Courses</Text>
       <View style={styles.inputContainer}>
@@ -147,10 +148,14 @@ const SignUpScreen = ({ navigation }) => {
         <Text style={styles.loginText}>Already have an account? Log in</Text>
       </TouchableOpacity>
     </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background,
