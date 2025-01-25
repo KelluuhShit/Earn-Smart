@@ -61,6 +61,7 @@ const SignInScreen = ({ navigation }) => {
           setErrors({});
           setIsAuthenticated(true);
           await AsyncStorage.setItem('username', userData.username); // Save username to local storage
+          console.log("Username saved to AsyncStorage: ", userData.username); // Add logging
           Toast.show({
             type: 'success',
             text1: 'Sign in successful!',

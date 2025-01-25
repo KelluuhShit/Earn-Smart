@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image, Alert, TextInput } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../utils/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,12 +9,15 @@ const HomeScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [username, setUsername] = useState('');
   const [profileImage, setProfileImage] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const storedUsername = await AsyncStorage.getItem('username');
         const storedProfileImage = await AsyncStorage.getItem('profileImage');
+        console.log("Stored username: ", storedUsername); // Add logging
+        console.log("Stored profile image: ", storedProfileImage); // Add logging
         if (storedUsername) {
           setUsername(storedUsername);
         }
@@ -68,6 +71,11 @@ const HomeScreen = () => {
     }
   };
 
+  const handleSearch = () => {
+    console.log("Search query: ", searchQuery);
+    // Implement search functionality here
+  };
+
   return (
     <ScrollView
       contentContainerStyle={styles.scrollContainer}
@@ -99,7 +107,20 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-        {/* Add more content here */}
+          <View style={styles.HomeContent}>
+          <View style={styles.searchContainer}>
+            <Icon name="search" size={20} color={colors.secondary} style={styles.searchIcon} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+              <Text style={styles.searchButtonText}>Go</Text>
+            </TouchableOpacity>
+          </View>
+          </View>
       </View>
     </ScrollView>
   );
@@ -135,8 +156,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   profileImage: {
-    width: 40,
-    height: 40,
+    width: 50,
+    height: 50,
     borderRadius: 20,
     marginLeft: 10,
   },
@@ -152,6 +173,34 @@ const styles = StyleSheet.create({
   introText: {
     fontSize: 13,
     color: colors.secondary,
+    fontFamily: 'Quicksand-Bold',
+  },
+  HomeContent: {
+    marginTop: 20,
+    paddingHorizontal: 10,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.cardBackground,
+    borderRadius: 5,
+    padding: 10,
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    padding: 10,
+    fontFamily: 'Quicksand',
+  },
+  searchButton: {
+    backgroundColor: colors.primary,
+    padding: 10,
+    borderRadius: 5,
+  },
+  searchButtonText: {
+    color: colors.background,
     fontFamily: 'Quicksand-Bold',
   },
 });
