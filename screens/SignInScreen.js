@@ -5,6 +5,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { firestore } from '../utils/firebase';
 import { doc, getDoc } from "firebase/firestore";
 import { AuthContext } from '../context/AuthContext';
+import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -16,13 +18,17 @@ const SignInScreen = ({ navigation }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (email) {
-        const userDoc = doc(firestore, "users", email.replace('.', '_'));
-        const userDocSnapshot = await getDoc(userDoc);
-        if (userDocSnapshot.exists()) {
-          const userData = userDocSnapshot.data();
-          setUsername(userData.username);
-        } else {
-          setErrors((prev) => ({ ...prev, email: 'Email not found' }));
+        try {
+          const userDoc = doc(firestore, "users", email.replace('.', '_'));
+          const userDocSnapshot = await getDoc(userDoc);
+          if (userDocSnapshot.exists()) {
+            const userData = userDocSnapshot.data();
+            setUsername(userData.username);
+          } else {
+            setErrors((prev) => ({ ...prev, email: 'Email not found' }));
+          }
+        } catch (error) {
+          console.error("Error fetching user data: ", error);
         }
       }
     };
@@ -51,9 +57,21 @@ const SignInScreen = ({ navigation }) => {
       if (userDocSnapshot.exists()) {
         const userData = userDocSnapshot.data();
         if (userData.password === password) {
-          // Clear errors and navigate to the Home screen
+          // Clear errors and display success message
           setErrors({});
           setIsAuthenticated(true);
+          await AsyncStorage.setItem('username', userData.username); // Save username to local storage
+          Toast.show({
+            type: 'success',
+            text1: 'Sign in successful!',
+            text2: 'Redirecting...',
+            visibilityTime: 5000, // 5 seconds
+          });
+
+          // Navigate to the Home screen after a delay
+          setTimeout(() => {
+            navigation.navigate('Home');
+          }, 5000); // 5 seconds delay
         } else {
           setErrors((prev) => ({ ...prev, password: 'Incorrect password' }));
         }
@@ -117,6 +135,7 @@ const SignInScreen = ({ navigation }) => {
           <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
         </TouchableOpacity>
       </View>
+      <Toast />
     </ScrollView>
   );
 };

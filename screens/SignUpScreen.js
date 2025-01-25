@@ -48,113 +48,117 @@ const SignUpScreen = ({ navigation }) => {
           password: password,
         });
 
-    // Clear errors and navigate to the next screen
-    setErrors({});
-    navigation.navigate('SignIn');
-  }
-} catch (error) {
-  console.error("Error adding document: ", error);
-  setErrorMessage("Error adding document: " + error.message);
-} finally {
-  setLoading(false);
-}
-};
+        // Clear errors and navigate to the next screen
+        setErrors({});
+        navigation.navigate('SignIn');
+      }
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      setErrorMessage("Error adding document: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-    <View style={styles.container}>
-      <Text style={styles.title}>Join Us Today and Unlock Your Financial Potential with Our Comprehensive Courses</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, errors.name && styles.inputError]}
-          placeholder="Name"
-          value={name}
-          onChangeText={(text) => {
-            setName(text);
-            setErrors((prev) => ({ ...prev, name: '' }));
-          }}
-        />
-        {errors.name ? (
-          <Icon name="exclamation-circle" size={20} color="#BE3144" style={styles.errorIcon} />
-        ) : (
-          name && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
-        )}
-        {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+      <View style={styles.container}>
+        <Text style={styles.title}>Join Us Today and Unlock Your Financial Potential with Our Comprehensive Courses</Text>
+        <View style={styles.inputContainer}>
+          <Icon name="user" size={20} color={colors.secondary} style={styles.inputIcon} />
+          <TextInput
+            style={[styles.input, errors.name && styles.inputError]}
+            placeholder="Name"
+            value={name}
+            onChangeText={(text) => {
+              setName(text);
+              setErrors((prev) => ({ ...prev, name: '' }));
+            }}
+          />
+          {errors.name ? (
+            <Icon name="exclamation-circle" size={20} color="#BE3144" style={styles.errorIcon} />
+          ) : (
+            name && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
+          )}
+          {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+        </View>
+        <View style={styles.inputContainer}>
+          <Icon name="envelope" size={20} color={colors.secondary} style={styles.inputIcon} />
+          <TextInput
+            style={[styles.input, errors.email && styles.inputError]}
+            placeholder="Email"
+            value={email}
+            onChangeText={(text) => {
+              setEmail(text);
+              setErrors((prev) => ({ ...prev, email: '' }));
+            }}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          {errors.email ? (
+            <Icon name="exclamation-circle" size={20} color="#BE3144" style={styles.errorIcon} />
+          ) : (
+            email && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
+          )}
+          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+        </View>
+        <View style={styles.inputContainer}>
+          <Icon name="lock" size={20} color={colors.secondary} style={styles.inputIcon} />
+          <TextInput
+            style={[styles.input, errors.password && styles.inputError]}
+            placeholder="Password"
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+              setErrors((prev) => ({ ...prev, password: '' }));
+            }}
+            secureTextEntry
+          />
+          {errors.password ? (
+            <Icon name="exclamation-circle" size={20} color="#BE3144" style={styles.errorIcon} />
+          ) : (
+            password && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
+          )}
+          {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+        </View>
+        <View style={styles.inputContainer}>
+          <Icon name="lock" size={20} color={colors.secondary} style={styles.inputIcon} />
+          <TextInput
+            style={[styles.input, errors.confirmPassword && styles.inputError]}
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChangeText={(text) => {
+              setConfirmPassword(text);
+              setErrors((prev) => ({ ...prev, confirmPassword: '' }));
+            }}
+            secureTextEntry
+          />
+          {errors.confirmPassword ? (
+            <Icon name="exclamation-circle" size={20} color="#BE3144" style={styles.errorIcon} />
+          ) : (
+            confirmPassword && confirmPassword === password && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
+          )}
+          {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+        </View>
+        <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
+          {loading ? (
+            <ActivityIndicator size="small" color={colors.background} />
+          ) : (
+            <Text style={styles.buttonText}>Sign Up</Text>
+          )}
+        </TouchableOpacity>
+        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+        <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+          <Text style={styles.loginText}>Already have an account? Log in</Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, errors.email && styles.inputError]}
-          placeholder="Email"
-          value={email}
-          onChangeText={(text) => {
-            setEmail(text);
-            setErrors((prev) => ({ ...prev, email: '' }));
-          }}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        {errors.email ? (
-          <Icon name="exclamation-circle" size={20} color="#BE3144" style={styles.errorIcon} />
-        ) : (
-          email && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
-        )}
-        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, errors.password && styles.inputError]}
-          placeholder="Password"
-          value={password}
-          onChangeText={(text) => {
-            setPassword(text);
-            setErrors((prev) => ({ ...prev, password: '' }));
-          }}
-          secureTextEntry
-        />
-        {errors.password ? (
-          <Icon name="exclamation-circle" size={20} color="#BE3144" style={styles.errorIcon} />
-        ) : (
-          password && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
-        )}
-        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, errors.confirmPassword && styles.inputError]}
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChangeText={(text) => {
-            setConfirmPassword(text);
-            setErrors((prev) => ({ ...prev, confirmPassword: '' }));
-          }}
-          secureTextEntry
-        />
-        {errors.confirmPassword ? (
-          <Icon name="exclamation-circle" size={20} color="#BE3144" style={styles.errorIcon} />
-        ) : (
-          confirmPassword && confirmPassword === password && <Icon name="check-circle" size={20} color="green" style={styles.errorIcon} />
-        )}
-        {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
-      </View>
-      <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator size="small" color={colors.background} />
-        ) : (
-          <Text style={styles.buttonText}>Sign Up</Text>
-        )}
-      </TouchableOpacity>
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-      <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-        <Text style={styles.loginText}>Already have an account? Log in</Text>
-      </TouchableOpacity>
-    </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    flex: 1,
+    flexGrow: 1,
   },
   container: {
     flex: 1,
@@ -170,7 +174,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontFamily: 'Quicksand-Bold',
     textAlign: 'start',
-    width:'100%',
+    width: '100%',
   },
   inputContainer: {
     width: '100%',
@@ -183,15 +187,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.secondary,
     borderRadius: 2,
+    paddingLeft: 40, // Add padding to make space for the icon
     fontFamily: 'Quicksand',
   },
-  inputError: {
-    borderColor: '#BE3144',
+  inputIcon: {
+    position: 'absolute',
+    left: 15,
+    top: 15,
   },
   errorIcon: {
     position: 'absolute',
     right: 15,
     top: 15,
+  },
+  inputError: {
+    borderColor: '#BE3144',
   },
   errorText: {
     color: '#BE3144',

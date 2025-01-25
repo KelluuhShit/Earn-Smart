@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import * as Font from 'expo-font';
-import StackNavigator from './navigation/StackNavigator';
+import TabNavigator from './navigation/TabNavigator';
 import { AuthProvider } from './context/AuthContext';
 
 export default function App() {
@@ -28,7 +28,7 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <StackNavigator />
+      <TabNavigator />
     </AuthProvider>
   );
 }
