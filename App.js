@@ -50,7 +50,7 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <TabNavigator />
+      <TabNavigator/>
     </AuthProvider>
   );
 }

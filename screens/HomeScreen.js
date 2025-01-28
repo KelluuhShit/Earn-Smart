@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Image, Alert, TextInput} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../utils/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import QueryModal from '../components/QueryModal';
 
 const HomeScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [username, setUsername] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  //const [QueryModal, setQueryOpened] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -21,6 +23,9 @@ const HomeScreen = () => {
         if (storedUsername) {
           setUsername(storedUsername);
         }
+        // else{
+        //   navigation.navigate('SignUp')
+        // }
         if (storedProfileImage) {
           setProfileImage(storedProfileImage);
         }
@@ -73,7 +78,6 @@ const HomeScreen = () => {
 
   const handleSearch = () => {
     console.log("Search query: ", searchQuery);
-    // Implement search functionality here
   };
 
   return (
@@ -183,11 +187,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.cardBackground,
-    borderRadius: 5,
-    padding: 10,
+    borderRadius: 50,
+    padding: 0,
+    borderColor:colors.primary,
+    borderWidth:1
   },
   searchIcon: {
     marginRight: 10,
+    marginLeft:15
   },
   searchInput: {
     flex: 1,
@@ -195,9 +202,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Quicksand',
   },
   searchButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.secondary,
     padding: 10,
-    borderRadius: 5,
+    borderTopLeftRadius:0,
+    borderTopRightRadius:50,
+    borderBottomRightRadius:50,
+    borderBottomLeftRadius:0,
   },
   searchButtonText: {
     color: colors.background,
